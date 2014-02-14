@@ -1,0 +1,163 @@
+<project name="xul" default="all">
+    <target name="all" depends="win, mac, linux32, linux64" description="Build all targets">
+    </target>
+
+    <target name="win" description="Build for Windows">
+        <loadproperties srcFile="build.properties"/>
+        <mkdir dir="./bin/${application}/windows"/>
+        <delete includeemptydirs="true">
+            <fileset dir="./bin/${application}/windows/">
+                <include name="*"/>
+                <include name="**/"/>
+                <exclude name="${application}.exe"/>
+                <exclude name="xulrunner/"/>
+            </fileset>
+        </delete>
+        <copy todir="./bin/${application}/windows/">
+            <fileset dir="src"/>
+        </copy>
+        <condition property="has-win-framework">
+            <resourceexists>
+                <file file="./bin/${application}/windows/xulrunner"/>
+            </resourceexists>
+        </condition>
+        <antcall target="get-win-framework" />
+    </target>
+
+    <target name="mac" description="Build for Mac OSX">
+        <loadproperties srcFile="build.properties"/>
+        <mkdir dir="./bin/${application}/mac/${application}.app/Contents/MacOS"/>
+        <echo file="./bin/${application}/mac/${application}.app/Contents/MacOS/start.sh"><![CDATA[#!/bin/sh
+
+set -e
+
+SELF_PATH=$(cd -P -- "$(dirname -- "$0")" &&  pwd -P) && SELF_PATH=$SELF_PATH/$(basename -- "$0")
+
+# resolve symlinks
+while [ -h $SELF_PATH ]; do
+    DIR=$(dirname -- "$SELF_PATH")
+    SYM=$(readlink $SELF_PATH)
+    SELF_PATH=$(cd $DIR && cd $(dirname -- "$SYM") && pwd)/$(basename -- "$SYM")
+done
+
+CUR_DIR=$(dirname "$SELF_PATH")
+CUR_DIR=$(dirname "$CUR_DIR")
+
+"$CUR_DIR"/Frameworks/XUL.framework/Versions/Current/xulrunner -app "$CUR_DIR"/Resources/application.ini]]></echo>
+        <echo file="./bin/${application}/mac/${application}.app/Contents/PkgInfo"><![CDATA[${pkg}]]></echo>
+        <echo file="./bin/${application}/mac/${application}.app/Contents/Info.plist"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>${application}</string>
+    <key>CFBundleIdentifier</key>
+    <string>${id}</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>${copyright}</string>
+    <key>CFBundleIconFile</key>
+    <string>${mac-icon}</string>
+    <key>CFBundleExecutable</key>
+    <string>start.sh</string>
+    <key>CFBundleGetInfoString</key>
+    <string>1.0</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+</dict>
+</plist>]]></echo>
+        <chmod file="./bin/${application}/mac/${application}.app/Contents/MacOS/start.sh" perm="+x" />
+        <delete dir="./bin/${application}/mac/${application}.app/Contents/Resources/"/>
+        <copy todir="./bin/${application}/mac/${application}.app/Contents/Resources/">
+            <fileset dir="src"/>
+        </copy>
+        <condition property="has-osx-framework">
+            <resourceexists>
+                <file file="./bin/${application}/mac/${application}.app/Contents/Frameworks/XUL.framework"/>
+            </resourceexists>
+        </condition>
+        <antcall target="get-osx-framework" />
+        <copy file="./bin/${application}/mac/${application}.app/Contents/Info.plist" tofile="./bin/${application}/mac/${application}.app/Contents/Frameworks/XUL.framework/Versions/Current/Info.plist"/>
+    </target>
+
+    <target name="linux32" description="Build for 32-bit Linux">
+        <loadproperties srcFile="build.properties"/>
+        <mkdir dir="./bin/${application}/linux-i686"/>
+        <delete includeemptydirs="true">
+            <fileset dir="./bin/${application}/linux-i686/">
+                <include name="*"/>
+                <include name="**/"/>
+                <exclude name="${application}"/>
+                <exclude name="xulrunner/"/>
+            </fileset>
+        </delete>
+        <copy todir="./bin/${application}/linux-i686/">
+            <fileset dir="src"/>
+        </copy>
+        <condition property="has-linux32-framework">
+            <resourceexists>
+                <file file="./bin/${application}/linux-i686/xulrunner"/>
+            </resourceexists>
+        </condition>
+        <antcall target="get-linux32-framework" />
+    </target>
+
+    <target name="linux64" description="Build for 64-bit Linux">
+        <loadproperties srcFile="build.properties"/>
+        <mkdir dir="./bin/${application}/linux-x86_64"/>
+        <delete includeemptydirs="true">
+            <fileset dir="./bin/${application}/linux-x86_64/">
+                <include name="*"/>
+                <include name="**/"/>
+                <exclude name="${application}"/>
+                <exclude name="xulrunner/"/>
+            </fileset>
+        </delete>
+        <copy todir="./bin/${application}/linux-x86_64/">
+            <fileset dir="src"/>
+        </copy>
+        <condition property="has-linux64-framework">
+            <resourceexists>
+                <file file="./bin/${application}/linux-x86_64/xulrunner"/>
+            </resourceexists>
+        </condition>
+        <antcall target="get-linux64-framework" />
+    </target>
+
+    <target name="get-win-framework" unless="has-win-framework">
+        <get src="http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/27.0/runtimes/xulrunner-27.0.en-US.win32.zip" dest="./bin/${application}/windows/" />
+        <unzip src="./bin/${application}/windows/xulrunner-27.0.en-US.win32.zip" dest="./bin/${application}/windows/"/>
+        <delete file="./bin/${application}/windows/xulrunner-27.0.en-US.win32.zip"/>
+        <move file="./bin/${application}/windows/xulrunner/xulrunner-stub.exe" tofile="./bin/${application}/windows/${application}.exe"/>
+    </target>
+
+    <target name="get-osx-framework" unless="has-osx-framework">
+        <mkdir dir="./bin/${application}/mac/${application}.app/Contents/Frameworks"/>
+        <get src="http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/27.0/runtimes/xulrunner-27.0.en-US.mac.tar.bz2" dest="./bin/${application}/mac/${application}.app/Contents/Frameworks/" />
+        <untar compression="bzip2" src="./bin/${application}/mac/${application}.app/Contents/Frameworks/xulrunner-27.0.en-US.mac.tar.bz2" dest="./bin/${application}/mac/${application}.app/Contents/Frameworks/"/>
+        <delete file="./bin/${application}/mac/${application}.app/Contents/Frameworks/xulrunner-27.0.en-US.mac.tar.bz2"/>
+        <chmod file="./bin/${application}/mac/${application}.app/Contents/Frameworks/XUL.framework/Versions/Current/xulrunner" perm="+x" />
+    </target>
+
+    <target name="get-linux32-framework" unless="has-linux32-framework">
+        <get src="http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/27.0/runtimes/xulrunner-27.0.en-US.linux-i686.tar.bz2" dest="./bin/${application}/linux-i686/" />
+        <untar compression="bzip2" src="./bin/${application}/linux-i686/xulrunner-27.0.en-US.linux-i686.tar.bz2" dest="./bin/${application}/linux-i686/"/>
+        <delete file="./bin/${application}/linux-i686/xulrunner-27.0.en-US.linux-i686.tar.bz2"/>
+        <move file="./bin/${application}/linux-i686/xulrunner/xulrunner-stub" tofile="./bin/${application}/linux-i686/${application}"/>
+        <chmod file="./bin/${application}/linux-i686/${application}" perm="+x" />
+    </target>
+
+    <target name="get-linux64-framework" unless="has-linux64-framework">
+        <get src="http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/27.0/runtimes/xulrunner-27.0.en-US.linux-x86_64.tar.bz2" dest="./bin/${application}/linux-x86_64/" />
+        <untar compression="bzip2" src="./bin/${application}/linux-x86_64/xulrunner-27.0.en-US.linux-x86_64.tar.bz2" dest="./bin/${application}/linux-x86_64/"/>
+        <delete file="./bin/${application}/linux-x86_64/xulrunner-27.0.en-US.linux-x86_64.tar.bz2"/>
+        <move file="./bin/${application}/linux-x86_64/xulrunner/xulrunner-stub" tofile="./bin/${application}/linux-x86_64/${application}"/>
+        <chmod file="./bin/${application}/linux-x86_64/${application}" perm="+x" />
+    </target>
+
+    <target name="clean" description="Deletes the project from the bin directory">
+        <loadproperties srcFile="build.properties"/>
+        <delete dir="./bin/${application}/"/>
+    </target>
+</project>

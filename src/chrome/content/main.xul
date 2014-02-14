@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window title="XUL Skeleton" fullscreenbutton="true" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<script type="application/x-javascript">
+<![CDATA[
+
+  // remove nodes tagged as being for another platform
+  document.addEventListener( "DOMContentLoaded", function onDOMContentLoaded(){
+    document.removeEventListener( "DOMContentLoaded", onDOMContentLoaded);
+
+    var platform = window.navigator.platform;
+    var not_platform = "!" + platform;
+
+    var platformElements = document.querySelectorAll("[data-platform]");
+
+    for (var i=0; i < platformElements.length; i++){
+      var node = platformElements[i];
+      var attr = node.getAttribute("data-platform");
+      if (attr == platform) continue;
+      if (attr.indexOf("!") == 0 && attr != not_platform) continue;
+      try {
+        node.parentNode.removeChild(node);
+      } catch (err) {
+        // just in case nodes are listed in nodes that have already
+        // been removed or some other such
+        console.error(err);
+      }
+    }
+  });
+
+]]>
+</script>
+
+<toolbox>
+  <menubar>
+
+    <menuitem id="menu_mac_services" data-platform="MacIntel" label="Services" />
+    <menuitem id="menu_mac_hide_app" data-platform="MacIntel" label="Hide XUL Skeleton" key="hide" />
+    <menuitem id="menu_mac_hide_others" data-platform="MacIntel" label="Hide Others" key="hideOthers" />
+    <menuitem id="menu_mac_show_all" data-platform="MacIntel" label="Show All" />
+    <menuitem id="menu_FileQuitItem" data-platform="MacIntel" label="Quit" key="quit" oncommand="javascript:Menu.doQuit();" />
+
+    <menu label="File" data-platform="!MacIntel">
+      <menupopup>
+        <menuitem label="Exit" key="exit" oncommand="javascript:Menu.doQuit();" />
+      </menupopup>
+    </menu>
+	
+    <menu label="Edit">
+      <menupopup>
+        <menuitem label="Copy" key="copy" oncommand="javascript:Menu.doCopy();" />
+        <menuitem label="Cut" key="cut" oncommand="javascript:Menu.doCut();" />
+        <menuitem label="Paste" key="paste" oncommand="javascript:Menu.doPaste();" />
+        <menuseparator id="menu_PrefsSeparator" />
+        <menuitem id="menu_preferences" label="Preferences" key="preferences" oncommand="javascript:Menu.doPreferences();" />
+      </menupopup>
+    </menu>
+
+    <menu label="Window">
+      <menupopup>
+        <menuitem label="Minimize" key="minimize" oncommand="javascript:Menu.doMinimize();" />
+        <menuitem label="Maximize" data-platform="!MacIntel" oncommand="javascript:Menu.doMaximize();" />
+        <menuitem label="Restore" data-platform="!MacIntel" oncommand="javascript:Menu.doRestore();" />
+        <menuitem label="Zoom" data-platform="MacIntel" oncommand="javascript:Menu.doZoom();" />
+      </menupopup>
+    </menu>
+
+    <menu label="Help">
+      <menupopup>
+		<menuitem id="aboutName" label="About XUL Skeleton" oncommand="javascript:Menu.doAbout();" />
+        <menuitem label="GitHub Project" oncommand="javascript:Menu.openURL('https://github.com/oliver-moran/xul-skeleton');" />
+      </menupopup>
+    </menu>
+
+  </menubar>
+</toolbox>
+
+<keyset>
+  <key id="preferences" modifiers="accel" key="," oncommand="javascript:Menu.doPreferences();" />
+  <key id="hide" data-platform="MacIntel" modifiers="accel" key="H" />
+  <key id="hideOthers" data-platform="MacIntel" modifiers="accel alt" key="H" />
+  <key id="quit" data-platform="MacIntel" modifiers="accel" key="Q" oncommand="javascript:Menu.doQuit();" />
+  <key id="exit" data-platform="!MacIntel" modifiers="alt" keycode="VK_F4" oncommand="javascript:Menu.doQuit();" />
+  <key id="copy" modifiers="accel" key="C" oncommand="javascript:Menu.doCopy();" />
+  <key id="cut" modifiers="accel" key="X" oncommand="javascript:Menu.doCut();" />
+  <key id="paste" modifiers="accel" key="V" oncommand="javascript:Menu.doPaste();" />
+  <key id="minimize" modifiers="accel" key="M" oncommand="javascript:Menu.doMinimize();" />
+</keyset>
+
+<script type="text/javascript" src="menubar.js"/>
+
+<!-- your code here -->
+
+</window>

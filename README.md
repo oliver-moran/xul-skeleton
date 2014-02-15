@@ -29,9 +29,9 @@ Should you wish to clean your project in the `bin` directory, type:
 
 ## Configuration ##
 
-The name for your application can be set in the `build.properties` file. In this file, you can also modify the copyright information, application ID and package identifier used by the Mac platform.
+The name for your application and other details can be set in the `src/application.ini` file.
 
-The icons to be used by your applications are located in the `src` directory and can be updated directly. You can change the paths or filenames of these icons in `build.properties` but they should always reside in the `src` directory.
+The icons to be used by your applications are located in the `src` directory and can be updated directly. You can change the paths or filenames of these icons in `src/application.ini` but they should always reside in the `src` directory.
 
 ## XULRunner verion ##
 

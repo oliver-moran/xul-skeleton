@@ -2,11 +2,11 @@
 
 The XUL Skeleton is an empty [XUL application](https://developer.mozilla.org/en/docs/XUL) and build script for Windows, Mac and Linux.
 
-The application provides an empty window and an OS-sensitive menu bar. From here you can develop a pure XUL application or develop a cross-platform HTML5-based desktop app (possibly using [the XUL iframe element](https://developer.mozilla.org/en-US/docs/XUL/iframe)).
+The application provides an empty window and an OS-sensitive menu bar. From here you can develop a pure XUL application or a HTML5-based desktop app (possibly using [the XUL `iframe` element](https://developer.mozilla.org/en-US/docs/XUL/iframe)).
 
-The application XUL source code is in the `src` directory. The default start file is `src/chrome/content/main.xul`.
+The application source code is in the `src` directory. The default start file is `src/chrome/content/main.xul`.
 
-See the XUL documentation on Mozilla Developer Network for help building a XUL-based applicatoin. And have fun!
+See the [XUL documentation on the Mozilla Developer Network](https://developer.mozilla.org/en/docs/XUL) for help building a XUL-based application. And have fun!
 
 ## Building ##
 
@@ -33,9 +33,9 @@ The name for your application and other details can be set in the `src/applicati
 
 The icons to be used by your applications are located in the `src` directory and can be updated directly. You can change the paths or filenames of these icons in `src/application.ini` but they should always reside in the `src` directory.
 
-## XULRunner verion ##
+## XULRunner version ##
 
-[XULRunner](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/XULRunner) is the runtime package used by XUL applications. XULRunner needs to be bundled with your application so that user don't need to install it seperately.
+[XULRunner](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/XULRunner) is the runtime package used by XUL applications. XULRunner needs to be bundled with your application so that user don't need to install it separately.
 
 The first time you build your application for a platform, the build script will download XULRunner from the Mozilla website. Thereafter, it will only be downloaded if the build script detects it has been removed.
 
